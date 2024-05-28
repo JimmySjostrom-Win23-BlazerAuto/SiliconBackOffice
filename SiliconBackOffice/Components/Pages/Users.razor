@@ -1,0 +1,22 @@
+﻿@page "/users"
+@attribute [StreamRendering]
+
+@using Microsoft.AspNetCore.Identity
+@using SiliconBackOffice.Data
+@inject UserManager<ApplicationUser> UserManager
+
+<h3>Total Registered Users: @userCount</h3>
+
+@code {
+    private int userCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userCount = await GetUserCountAsync();
+    }
+
+    private async Task<int> GetUserCountAsync()
+    {
+        return await Task.FromResult(UserManager.Users.Count());
+    }
+}
