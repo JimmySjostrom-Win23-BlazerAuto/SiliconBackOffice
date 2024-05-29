@@ -30,10 +30,33 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 	options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-	.AddEntityFrameworkStores<ApplicationDbContext>()
+builder.Services.AddAuthorization(x =>
+{
+    x.AddPolicy("SuperAdmins", policy => policy.RequireRole("SuperAdmin"));
+    x.AddPolicy("Admins", policy => policy.RequireRole("SuperAdmin", "Admin"));
+    x.AddPolicy("Managers", policy => policy.RequireRole("Admin", "SuperAdmin", "Manager"));
+    x.AddPolicy("AuthenticatedUsers", policy => policy.RequireRole("Admin", "SuperAdmin", "Manager", "User"));
+});
+
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+    options.User.RequireUniqueEmail = true;
+    options.Password.RequiredLength = 8;
+})
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
 	.AddSignInManager()
 	.AddDefaultTokenProviders();
+
+builder.Services.ConfigureApplicationCookie(x =>
+{
+    x.LoginPath = "/account/login";
+    x.Cookie.HttpOnly = true;
+    x.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    x.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+    x.SlidingExpiration = true;
+});
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
@@ -56,6 +79,19 @@ app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    string[] roles = ["SuperAdmin", "Admin", "Manager", "User"];
+
+    foreach (var role in roles)
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+}
 
 app.MapRazorComponents<App>()
 	.AddInteractiveServerRenderMode()
