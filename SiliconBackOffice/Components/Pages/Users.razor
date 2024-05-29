@@ -1,22 +1,55 @@
 ﻿@page "/users"
+
 @attribute [StreamRendering]
 
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
 @using SiliconBackOffice.Data
+@using Microsoft.AspNetCore.Components.Authorization
+@using SiliconBackOffice.Services
+
 @inject UserManager<ApplicationUser> UserManager
+@inject ApplicationDbContext DbContext
+@inject RoleService RoleService
+
+<AuthorizeView>
+    <Authorized>
+        @if (IsManager)
+        {
+            <p>Welcome, Manager!</p>
+        }
+        else
+        {
+            <p>Welcome, User!</p>
+        }
+    </Authorized>
+</AuthorizeView>
 
 <h3>Total Registered Users: @userCount</h3>
 
+<ul>
+    @foreach (var user in users)
+    {
+        <li>
+            @if (user.UserProfile != null)
+            {
+                @user.UserProfile.FirstName @user.UserProfile.LastName
+            }
+            <a href="mailto:@user.Email">@user.Email</a>
+        </li>
+    }
+</ul>
+
 @code {
+    private bool IsManager { get; set; }
     private int userCount;
+    private List<ApplicationUser> users = new List<ApplicationUser>();
 
     protected override async Task OnInitializedAsync()
     {
-        userCount = await GetUserCountAsync();
-    }
+        IsManager = await RoleService.IsManagerAsync();
 
-    private async Task<int> GetUserCountAsync()
-    {
-        return await Task.FromResult(UserManager.Users.Count());
+        users = await DbContext.Users.Include(u => u.UserProfile).ToListAsync();
+        userCount = users.Count;
     }
 }
