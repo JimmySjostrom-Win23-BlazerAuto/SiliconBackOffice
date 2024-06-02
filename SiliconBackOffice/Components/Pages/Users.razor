@@ -29,22 +29,6 @@
 
 <h3>Total Registered Users: @userCount</h3>
 
-@* <ul>
-    @foreach (var user in users)
-    {
-        <li>
-            @if (user.UserProfile != null)
-            {
-                <a href="@($"/users/edit/{user.Id}")">@user.UserProfile.FirstName @user.UserProfile.LastName</a>
-            }
-            else
-            {
-                <a href="@($"/users/edit/{user.Id}")">@user.Email</a>
-            }
-        </li>
-    }
-</ul> *@
-
 <table class="table">
     <thead>
         <tr>
@@ -71,6 +55,38 @@
     </tbody>
 </table>
 
+<h3>Confirm Email Status</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email Confirmation Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in users)
+        {
+            <tr>
+                <td>@user.UserProfile.FirstName</td>
+                <td>@user.UserProfile.LastName</td>
+                <td>@(user.EmailConfirmed ? "Confirmed" : "Unconfirmed")</td>
+                <td>
+                    @if (!user.EmailConfirmed)
+                    {
+                        <button class="btn btn-theme"
+                                @onclick="() => ConfirmUserEmail(user)">
+                            Confirm Email
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
 @code {
     private bool IsManager { get; set; }
     private int userCount;
@@ -86,5 +102,21 @@
     private void EditUser(string userId)
     {
         NavigationManager.NavigateTo($"/users/edit/{userId}");
+    }
+
+    private async Task ConfirmUserEmail(ApplicationUser user)
+    {
+        var token = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+        var result = await UserManager.ConfirmEmailAsync(user, token);
+        if (result.Succeeded)
+        {
+            // Refresh the user list to update the confirmation status
+            users = await DbContext.Users.Include(u => u.UserProfile).ToListAsync();
+        }
+        else
+        {
+            // Handle error (e.g., display an error message)
+            Console.WriteLine("Error confirming email");
+        }
     }
 }

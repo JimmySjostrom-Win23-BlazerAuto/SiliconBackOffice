@@ -1,0 +1,94 @@
+﻿@page "/roles"
+
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using SiliconBackOffice.Data
+@using SiliconBackOffice.Models
+
+@inject UserManager<ApplicationUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+
+<h3>Role Management</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>User Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in users)
+        {
+            <tr>
+                <td>@user.User.UserName</td>
+                <td>@user.User.Email</td>
+                <td>
+                    <select @bind="user.SelectedRole">
+                        <option value="User">User</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </td>
+                <td>
+                    <button class="btn btn-primary" @onclick="() => SaveRole(user)">Save</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<UserWithRole> users = new List<UserWithRole>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var applicationUsers = await UserManager.Users.ToListAsync();
+        foreach (var user in applicationUsers)
+        {
+            var roles = await UserManager.GetRolesAsync(user);
+            users.Add(new UserWithRole
+                {
+                    User = user,
+                    SelectedRole = roles.FirstOrDefault() ?? "User"
+                });
+        }
+    }
+
+    private async Task SaveRole(UserWithRole userWithRole)
+    {
+        var user = userWithRole.User;
+        var currentRoles = await UserManager.GetRolesAsync(user);
+        var selectedRole = userWithRole.SelectedRole;
+
+        if (!currentRoles.Contains(selectedRole))
+        {
+            await UserManager.RemoveFromRolesAsync(user, currentRoles);
+            await UserManager.AddToRoleAsync(user, selectedRole);
+        }
+
+        // Refresh the user list to update roles
+        users.Clear();
+        var applicationUsers = await UserManager.Users.ToListAsync();
+        foreach (var appUser in applicationUsers)
+        {
+            var roles = await UserManager.GetRolesAsync(appUser);
+            users.Add(new UserWithRole
+                {
+                    User = appUser,
+                    SelectedRole = roles.FirstOrDefault() ?? "User"
+                });
+        }
+    }
+
+    public class UserWithRole
+    {
+        public ApplicationUser User { get; set; }
+        public string SelectedRole { get; set; }
+    }
+}
