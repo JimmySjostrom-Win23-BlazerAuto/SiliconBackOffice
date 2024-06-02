@@ -8,45 +8,49 @@
 
 @inject HttpClient Http
 
-<PageTitle>Edit Course</PageTitle>
-
-<section class="course-details">
-    <div class="container">
-        @if (course != null)
-        {
-            <div class="course">
-                @if (course.IsBestseller)
+<AuthorizeView>
+    <Authorized>
+        <PageTitle>Edit Course</PageTitle>
+        <section class="course-details">
+            <div class="container">
+                @if (course != null)
                 {
-                    <div class="bestseller">Best Seller</div>
-                }
-                <img src="@course.ImageUri" alt="@course.Title" />
-                <div class="content">
-                    <h5 class="title">@course.Title</h5>
-                    <p class="author">By @course.Author</p>
-                    <div class="pricing">
-                        @if (!string.IsNullOrEmpty(course.DiscountPrice))
+                    <div class="course">
+                        @if (course.IsBestseller)
                         {
-                            <div class="discount">@course.DiscountPrice</div>
+                            <div class="bestseller">Best Seller</div>
                         }
-                        <div class="price @(!string.IsNullOrEmpty(course.DiscountPrice)? "discount-enabled" : "")">@course.Price</div>
-                    </div>
-                    <div class="footer">
-                        <div class="hours">
-                            <i class="fa-regular fa-thumbs-up"></i> @course.LikesInProcent (@course.LikesInNumbers)
+                        <img src="@course.ImageUri" alt="@course.Title" />
+                        <div class="content">
+                            <h5 class="title">@course.Title</h5>
+                            <p class="author">By @course.Author</p>
+                            <div class="pricing">
+                                @if (!string.IsNullOrEmpty(course.DiscountPrice))
+                                {
+                                    <div class="discount">@course.DiscountPrice</div>
+                                }
+                                <div class="price @(!string.IsNullOrEmpty(course.DiscountPrice)? "discount-enabled" : "")">@course.Price</div>
+                            </div>
+                            <div class="footer">
+                                <div class="hours">
+                                    <i class="fa-regular fa-thumbs-up"></i> @course.LikesInProcent (@course.LikesInNumbers)
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
+                else
+                {
+                    <p>Loading course details...</p>
+                }
             </div>
-        }
-        else
-        {
-            <p>Loading course details...</p>
-        }
-    </div>
-</section>
+        </section>
+
+    </Authorized>
+</AuthorizeView>
 
 @code {
-    private CourseCardModel course;
+    private CourseCardModel? course;
 
     [Parameter]
     public Guid CourseId { get; set; }

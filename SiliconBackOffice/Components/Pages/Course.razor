@@ -4,110 +4,93 @@
 @using Microsoft.AspNetCore.Components.Forms
 @inject HttpClient Http
 
-<h3>Create a New Course</h3>
+<AuthorizeView>
+    <Authorized>
+        <h3>Create a New Course</h3>
+        <EditForm Model="course" OnValidSubmit="HandleValidSubmit" FormName="course">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div>
+                <label>Image URI:</label>
+                <InputText id="imageUri" @bind-Value="course.ImageUri" />
+            </div>
+            <div>
+                <label>Image Header URI:</label>
+                <InputText id="imageHeaderUri" @bind-Value="course.ImageHeaderUri" />
+            </div>
+            <div>
+                <label>Is Bestseller:</label>
+                <InputCheckbox id="isBestseller" @bind-Value="course.IsBestseller" />
+            </div>
+            <div>
+                <label>Is Digital:</label>
+                <InputCheckbox id="isDigital" @bind-Value="course.IsDigital" />
+            </div>
+            <div>
+                <label>Categories (comma separated):</label>
+                <InputText id="categories" @bind-Value="categories" />
+            </div>
+            <div>
+                <label>Title:</label>
+                <InputText id="title" @bind-Value="course.Title" />
+            </div>
+            <div>
+                <label>Ingress:</label>
+                <InputText id="ingress" @bind-Value="course.Ingress" />
+            </div>
+            <div>
+                <label>Star Rating:</label>
+                <InputNumber id="starRating" @bind-Value="course.StarRating" />
+            </div>
+            <div>
+                <label>Reviews:</label>
+                <InputText id="reviews" @bind-Value="course.Reviews" />
+            </div>
+            <div>
+                <label>Likes in Percent:</label>
+                <InputText id="likesInProcent" @bind-Value="course.LikesInProcent" />
+            </div>
+            <div>
+                <label>Likes:</label>
+                <InputText id="likes" @bind-Value="course.Likes" />
+            </div>
+            <div>
+                <label>Hours:</label>
+                <InputText id="hours" @bind-Value="course.Hours" />
+            </div>
+            <div>
+                <label>Author Name:</label>
+                <InputText id="authorName" @bind-Value="course.Authors[0].Name" />
+            </div>
+            <div>
+                <label>Currency:</label>
+                <InputText id="currency" @bind-Value="course.Prices.Currency" />
+            </div>
+            <div>
+                <label>Price:</label>
+                <InputNumber id="price" @bind-Value="course.Prices.Price" />
+            </div>
+            <div>
+                <label>Discount:</label>
+                <InputNumber id="discount" @bind-Value="course.Prices.Discount" />
+            </div>
+            <div>
+                <label>Description:</label>
+                <InputTextArea id="description" @bind-Value="course.Content.Description" />
+            </div>
+            <div>
+                <label>Includes (comma separated):</label>
+                <InputText id="includes" @bind-Value="includes" />
+            </div>
+            <div>
+                <label>Program Details (format: id:title:description, comma separated):</label>
+                <InputText id="programDetails" @bind-Value="programDetails" />
+            </div>
+            <button type="submit">Create Course</button>
+        </EditForm>
+    </Authorized>
+</AuthorizeView>
 
-<EditForm Model="course" OnValidSubmit="HandleValidSubmit" FormName="course">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <!-- Form Fields -->
-    <div>
-        <label>Image URI:</label>
-        <InputText id="imageUri" @bind-Value="course.ImageUri" />
-    </div>
-
-    <div>
-        <label>Image Header URI:</label>
-        <InputText id="imageHeaderUri" @bind-Value="course.ImageHeaderUri" />
-    </div>
-
-    <div>
-        <label>Is Bestseller:</label>
-        <InputCheckbox id="isBestseller" @bind-Value="course.IsBestseller" />
-    </div>
-
-    <div>
-        <label>Is Digital:</label>
-        <InputCheckbox id="isDigital" @bind-Value="course.IsDigital" />
-    </div>
-
-    <div>
-        <label>Categories (comma separated):</label>
-        <InputText id="categories" @bind-Value="categories" />
-    </div>
-
-    <div>
-        <label>Title:</label>
-        <InputText id="title" @bind-Value="course.Title" />
-    </div>
-
-    <div>
-        <label>Ingress:</label>
-        <InputText id="ingress" @bind-Value="course.Ingress" />
-    </div>
-
-    <div>
-        <label>Star Rating:</label>
-        <InputNumber id="starRating" @bind-Value="course.StarRating" />
-    </div>
-
-    <div>
-        <label>Reviews:</label>
-        <InputText id="reviews" @bind-Value="course.Reviews" />
-    </div>
-
-    <div>
-        <label>Likes in Percent:</label>
-        <InputText id="likesInProcent" @bind-Value="course.LikesInProcent" />
-    </div>
-
-    <div>
-        <label>Likes:</label>
-        <InputText id="likes" @bind-Value="course.Likes" />
-    </div>
-
-    <div>
-        <label>Hours:</label>
-        <InputText id="hours" @bind-Value="course.Hours" />
-    </div>
-
-    <div>
-        <label>Author Name:</label>
-        <InputText id="authorName" @bind-Value="course.Authors[0].Name" />
-    </div>
-
-    <div>
-        <label>Currency:</label>
-        <InputText id="currency" @bind-Value="course.Prices.Currency" />
-    </div>
-
-    <div>
-        <label>Price:</label>
-        <InputNumber id="price" @bind-Value="course.Prices.Price" />
-    </div>
-
-    <div>
-        <label>Discount:</label>
-        <InputNumber id="discount" @bind-Value="course.Prices.Discount" />
-    </div>
-
-    <div>
-        <label>Description:</label>
-        <InputTextArea id="description" @bind-Value="course.Content.Description" />
-    </div>
-
-    <div>
-        <label>Includes (comma separated):</label>
-        <InputText id="includes" @bind-Value="includes" />
-    </div>
-
-    <div>
-        <label>Program Details (format: id:title:description, comma separated):</label>
-        <InputText id="programDetails" @bind-Value="programDetails" />
-    </div>
-
-    <button type="submit">Create Course</button>
-</EditForm>
 
 @code {
     private CourseCreateRequestInput course = new CourseCreateRequestInput

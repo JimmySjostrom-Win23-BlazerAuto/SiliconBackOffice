@@ -25,4 +25,12 @@ public class RoleService
 
         return user.Identity != null && user.Identity.IsAuthenticated && user.IsInRole("Manager");
     }
+
+    public async Task<bool> IsAdminAsync()
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        return user.Identity != null && user.Identity.IsAuthenticated && user.IsInRole("Admin");
+    }
 }

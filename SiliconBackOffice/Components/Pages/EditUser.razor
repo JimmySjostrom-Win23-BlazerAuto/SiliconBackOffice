@@ -13,97 +13,87 @@
 @inject ApplicationDbContext DbContext
 @inject ILogger<EditUser> Logger
 
-<PageTitle>Edit User Profile</PageTitle>
+<AuthorizeView>
+    <Authorized>
+        <PageTitle>Edit User Profile</PageTitle>
+        <div class="details">
+            <div class="basic-info">
+                @if (!string.IsNullOrEmpty(@StatusMessage))
+                {
+                    <div class="alert alert-info">@StatusMessage</div>
+                }
 
-<div class="details">
-    <div class="basic-info">
-        @if (!string.IsNullOrEmpty(@StatusMessage))
-        {
-            <div class="alert alert-info">@StatusMessage</div>
-        }
-
-        <EditForm Model="EditProfileForm" OnValidSubmit="OnValidSubmitAsync" class="edit-form" FormName="editProfile" method="post" novalidate>
-            <DataAnnotationsValidator />
-            <h2>Edit Profile</h2>
-
-            <div class="content">
-                <div class="input-group" id="form-firstname">
-                    <label>First Name</label>
-                    <InputText @bind-Value="EditProfileForm.FirstName" />
-                    <ValidationMessage For="() => EditProfileForm.FirstName" />
-                </div>
-
-                <div class="input-group" id="form-lastname">
-                    <label>Last Name</label>
-                    <InputText @bind-Value="EditProfileForm.LastName" />
-                    <ValidationMessage For="() => EditProfileForm.LastName" />
-                </div>
-
-                <div class="input-group" id="form-phone">
-                    <label>Phone Number</label>
-                    <InputText @bind-Value="EditProfileForm.PhoneNumber" />
-                    <ValidationMessage For="() => EditProfileForm.PhoneNumber" />
-                </div>
-
-                <div class="input-group" id="form-email">
-                    <label>Email</label>
-                    <InputText @bind-Value="EditProfileForm.Email" />
-                    <ValidationMessage For="() => EditProfileForm.Email" />
-                </div>
-
-                <div class="input-group" id="form-bio">
-                    <label>Biography</label>
-                    <InputTextArea @bind-Value="EditProfileForm.Biography" />
-                    <ValidationMessage For="() => EditProfileForm.Biography" />
-                </div>
-
-                <div class="form-buttons">
-                    <button class="btn-theme" type="submit">Save changes</button>
-                    <button class="btn-gray" type="reset">Cancel</button>
-                </div>
+                <EditForm Model="EditProfileForm" OnValidSubmit="OnValidSubmitAsync" class="edit-form" FormName="editProfile" method="post" novalidate>
+                    <DataAnnotationsValidator />
+                    <h2>Edit Profile</h2>
+                    <div class="content">
+                        <div class="input-group" id="form-firstname">
+                            <label>First Name</label>
+                            <InputText @bind-Value="EditProfileForm.FirstName" />
+                            <ValidationMessage For="() => EditProfileForm.FirstName" />
+                        </div>
+                        <div class="input-group" id="form-lastname">
+                            <label>Last Name</label>
+                            <InputText @bind-Value="EditProfileForm.LastName" />
+                            <ValidationMessage For="() => EditProfileForm.LastName" />
+                        </div>
+                        <div class="input-group" id="form-phone">
+                            <label>Phone Number</label>
+                            <InputText @bind-Value="EditProfileForm.PhoneNumber" />
+                            <ValidationMessage For="() => EditProfileForm.PhoneNumber" />
+                        </div>
+                        <div class="input-group" id="form-email">
+                            <label>Email</label>
+                            <InputText @bind-Value="EditProfileForm.Email" />
+                            <ValidationMessage For="() => EditProfileForm.Email" />
+                        </div>
+                        <div class="input-group" id="form-bio">
+                            <label>Biography</label>
+                            <InputTextArea @bind-Value="EditProfileForm.Biography" />
+                            <ValidationMessage For="() => EditProfileForm.Biography" />
+                        </div>
+                        <div class="form-buttons">
+                            <button class="btn-theme" type="submit">Save changes</button>
+                            <button class="btn-gray" type="reset">Cancel</button>
+                        </div>
+                    </div>
+                </EditForm>
+                <section class="address-info">
+                    <h5>Address</h5>
+                    <EditForm Model="AddressInfoForm" OnValidSubmit="OnValidSubmitAddressAsync" class="edit-form" FormName="addressForm" method="post" novalidate>
+                        <DataAnnotationsValidator />
+                        <div class="content">
+                            <div id="form-addressline-1" class="input-group">
+                                <label>Address Line 1</label>
+                                <InputText @bind-Value="AddressInfoForm.AddressLine_1" />
+                                <ValidationMessage For="() => AddressInfoForm.AddressLine_1" />
+                            </div>
+                            <div id="form-addressline-2" class="input-group">
+                                <label>Address line 2<span>(optional)</span></label>
+                                <InputText @bind-Value="AddressInfoForm.AddressLine_2" />
+                                <ValidationMessage For="() => AddressInfoForm.AddressLine_2" />
+                            </div>
+                            <div id="form-postalcode" class="input-group">
+                                <label>Postal Code</label>
+                                <InputText @bind-Value="AddressInfoForm.PostalCode" />
+                                <ValidationMessage For="() => AddressInfoForm.PostalCode" />
+                            </div>
+                            <div id="form-city" class="input-group">
+                                <label>City</label>
+                                <InputText @bind-Value="AddressInfoForm.City" />
+                                <ValidationMessage For="() => AddressInfoForm.City" />
+                            </div>
+                            <div class="form-buttons">
+                                <button class="btn-gray" type="reset">Cancel</button>
+                                <button class="btn-theme" type="submit">Save changes</button>
+                            </div>
+                        </div>
+                    </EditForm>
+                </section>
             </div>
-        </EditForm>
-
-        <section class="address-info">
-            <h5>Address</h5>
-
-            <EditForm Model="AddressInfoForm" OnValidSubmit="OnValidSubmitAddressAsync" class="edit-form" FormName="addressForm" method="post" novalidate>
-                <DataAnnotationsValidator />
-
-                <div class="content">
-                    <div id="form-addressline-1" class="input-group">
-                        <label>Address Line 1</label>
-                        <InputText @bind-Value="AddressInfoForm.AddressLine_1" />
-                        <ValidationMessage For="() => AddressInfoForm.AddressLine_1" />
-                    </div>
-
-                    <div id="form-addressline-2" class="input-group">
-                        <label>Address line 2<span>(optional)</span></label>
-                        <InputText @bind-Value="AddressInfoForm.AddressLine_2" />
-                        <ValidationMessage For="() => AddressInfoForm.AddressLine_2" />
-                    </div>
-
-                    <div id="form-postalcode" class="input-group">
-                        <label>Postal Code</label>
-                        <InputText @bind-Value="AddressInfoForm.PostalCode" />
-                        <ValidationMessage For="() => AddressInfoForm.PostalCode" />
-                    </div>
-
-                    <div id="form-city" class="input-group">
-                        <label>City</label>
-                        <InputText @bind-Value="AddressInfoForm.City" />
-                        <ValidationMessage For="() => AddressInfoForm.City" />
-                    </div>
-
-                    <div class="form-buttons">
-                        <button class="btn-gray" type="reset">Cancel</button>
-                        <button class="btn-theme" type="submit">Save changes</button>
-                    </div>
-                </div>
-            </EditForm>
-        </section>
-    </div>
-</div>
+        </div>
+    </Authorized>
+</AuthorizeView>
 
 @code {
     [Parameter]
