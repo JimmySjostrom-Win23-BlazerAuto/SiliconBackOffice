@@ -1,0 +1,344 @@
+.account-deets {
+    /*    display: grid;
+    grid-template-columns: 2fr 5fr;
+    gap: 150px;
+    margin-bottom: 70px;*/
+
+    height: 100%;
+
+    .container {
+        height: 100%;
+        display: grid;
+        gap: 50px;
+        grid-template-columns: 2fr 5fr;
+    }
+
+    aside {
+        border-right: 1px solid var(--color-gray-300);
+        padding-right: 20px;
+
+        .profile {
+            text-align: center;
+
+
+            .profile-image {
+                position: relative;
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                border-style: solid;
+                border-color: var(--color-theme);
+                overflow: hidden;
+
+                img {
+                    justify-content: center;
+                    align-items: center;
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    z-index: 1;
+                }
+
+                .btn-circle {
+                    position: absolute;
+                    bottom: 0;
+                    right: 0;
+                    transform: translate(50%, 50%);
+                    background-color: #ffffff;
+                    color: #000000;
+                    border: 1px solid #ccc;
+                    border-radius: 50%;
+                    width: 30px;
+                    height: 30px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    cursor: pointer;
+                    z-index: 2;
+
+                    i {
+                        font-size: 14px;
+                    }
+                }
+            }
+
+            .profile-info {
+                margin: 20px;
+                text-align: left;
+
+                h5 {
+                    margin-top: 15px;
+                    margin-bottom: 0;
+                }
+
+                p {
+                    @include text-m;
+                }
+            }
+        }
+
+
+
+        nav {
+            margin-top: 50px;
+            text-align: left;
+
+            a {
+                margin: 10px 0;
+                text-align: left;
+            }
+
+            .btn-theme-s {
+                text-align: left;
+                justify-content: flex-start;
+            }
+        }
+    }
+
+    .details {
+        margin-top: 50px;
+        width: 100%;
+
+        .basic-info {
+
+            .edit-form {
+                padding: 1rem;
+                padding-bottom: 50px;
+                border-bottom: 1px solid var(--color-gray-300);
+
+
+                h2 {
+                    color: var(--color-theme);
+                    text-align: left;
+                    padding-top: 30px;
+                }
+
+                .content {
+                    display: grid;
+                    gap: 1rem 2rem;
+                    grid-template-columns: 1fr 1fr;
+                    grid-template-areas: "firstname lastname" "email phone" "bio bio" "buttons buttons";
+
+                    #form-firstname {
+                        grid-area: firstname;
+                    }
+
+                    #form-lastname {
+                        grid-area: lastname;
+                    }
+
+                    #form-email {
+                        grid-area: email;
+                    }
+
+                    #form-phone {
+                        grid-area: phone;
+                    }
+
+                    #form-bio {
+                        grid-area: bio;
+
+                        span {
+                            color: var(--color-gray-500);
+                            font-weight: 400;
+                        }
+                    }
+
+                    .form-buttons {
+                        grid-area: buttons;
+                        margin: 20px 0;
+                        display: flex;
+                        gap: 20px;
+                    }
+                }
+            }
+        }
+
+        .address-info {
+            margin-top: 2rem;
+
+            h5 {
+                margin-bottom: 1rem;
+            }
+
+            .edit-form {
+
+
+                .content {
+                    display: grid;
+                    gap: 1rem 2rem;
+                    grid-template-columns: 1fr 1fr;
+                    grid-template-areas:
+                        "addressline1 addressline1" "addressline2 addressline2" "postalcode city" "buttons buttons";
+
+                    #form-addressline-1 {
+                        grid-area: addressline1;
+                    }
+
+                    #form-addressline-2 {
+                        grid-area: addressline2;
+                    }
+
+                    #form-postalcode {
+                        grid-area: postalcode;
+                    }
+
+                    #form-city {
+                        grid-area: city;
+                    }
+
+                    .form-buttons {
+                        grid-area: buttons;
+                        margin: 20px 0;
+                        display: flex;
+                        gap: 20px;
+                    }
+                }
+            }
+        }
+    }
+
+    .form-container {
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+
+            .form-floating {
+                flex: 1;
+                margin-bottom: 0; // Override the mb-3 class to avoid additional margin
+            }
+
+            .col-md-6 {
+                padding: 0.5rem;
+            }
+        }
+
+        .form-floating {
+            margin-bottom: 1rem;
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+
+            button {
+                margin-top: 0;
+            }
+        }
+
+        hr {
+            margin: 2rem 0;
+            border: none;
+            border-top: 1px solid #ccc;
+        }
+
+        .delete-account-section {
+            h4 {
+                margin-bottom: 1rem;
+                color: var(--color-theme);
+            }
+
+            .text-danger {
+                margin-bottom: 1rem;
+            }
+
+            .form-check {
+                display: flex;
+                align-items: center;
+
+                .form-check-input {
+                    margin-right: 0.5rem;
+                }
+
+                .form-check-label {
+                    margin: 0;
+                }
+            }
+
+            .btn-danger {
+                margin-top: 1rem;
+            }
+        }
+    }
+
+    .title {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+
+        h2 {
+            font-size: 2.5em;
+        }
+    }
+
+    .notifications {
+     
+        .title {
+            h1 {
+                margin-bottom: 1rem;
+            }
+        }
+
+        .alternative {
+            margin-bottom: 2rem;
+
+            h4 {
+                margin-bottom: 1rem;
+            }
+        }
+
+        .form-email {
+            margin-bottom: 2rem;
+
+            .form-buttons {
+                display: flex;
+                margin-top: 1rem;
+
+                button {
+                    margin-top: 0;
+                }
+            }
+
+            .input-group {
+                position: relative;
+
+                i {
+                    position: absolute;
+                    left: 20px;
+                    top: 45%;
+                    transform: translateY(-50%);
+                    font-size: 1.3em;
+                }
+
+                input {
+                    padding-left: 45px;
+                }
+            }
+
+            .button-group {
+                display: flex;
+                gap: 1rem;
+                margin-top: 1rem;
+
+                button {
+                    padding: 0.5rem 1rem;
+                    border-radius: 5px;
+                    border: none;
+                    cursor: pointer;
+                }
+
+                .btn-gray {
+                    background-color: #ccc;
+                    color: #fff;
+                }
+
+                .btn-theme {
+                    background-color: #007bff;
+                    color: #fff;
+                }
+            }
+        }
+    }
+}

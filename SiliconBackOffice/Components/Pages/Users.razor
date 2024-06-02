@@ -1,7 +1,5 @@
 ﻿@page "/users"
 
-@attribute [StreamRendering]
-
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @using SiliconBackOffice.Data
@@ -11,6 +9,10 @@
 @inject UserManager<ApplicationUser> UserManager
 @inject ApplicationDbContext DbContext
 @inject RoleService RoleService
+@inject NavigationManager NavigationManager
+
+@attribute [StreamRendering]
+@rendermode InteractiveServer
 
 <AuthorizeView>
     <Authorized>
@@ -27,18 +29,47 @@
 
 <h3>Total Registered Users: @userCount</h3>
 
-<ul>
+@* <ul>
     @foreach (var user in users)
     {
         <li>
             @if (user.UserProfile != null)
             {
-                @user.UserProfile.FirstName @user.UserProfile.LastName
+                <a href="@($"/users/edit/{user.Id}")">@user.UserProfile.FirstName @user.UserProfile.LastName</a>
             }
-            <a href="mailto:@user.Email">@user.Email</a>
+            else
+            {
+                <a href="@($"/users/edit/{user.Id}")">@user.Email</a>
+            }
         </li>
     }
-</ul>
+</ul> *@
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>User Name</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in users)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@user.UserProfile.FirstName @user.UserProfile.LastName</td>
+                <td>@user.Email</td>
+                <td>
+                    <button class="btn btn-theme"
+                            @onclick="() => EditUser(user.Id)">
+                        Edit
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 @code {
     private bool IsManager { get; set; }
@@ -48,8 +79,12 @@
     protected override async Task OnInitializedAsync()
     {
         IsManager = await RoleService.IsManagerAsync();
-
         users = await DbContext.Users.Include(u => u.UserProfile).ToListAsync();
         userCount = users.Count;
+    }
+
+    private void EditUser(string userId)
+    {
+        NavigationManager.NavigateTo($"/users/edit/{userId}");
     }
 }

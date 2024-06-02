@@ -4,79 +4,100 @@
 @using SiliconBackOffice.Models
 
 @inject HttpClient Http
+@inject NavigationManager NavigationManager
 
 @attribute [Authorize]
 @attribute [StreamRendering]
+
+@rendermode InteractiveServer
+
 <section class="courses">
-	<div class="container">
-		<div class="header">
-			<h1>Courses</h1>
+    <div class="container">
+        <div class="header">
+            <h1>Courses</h1>
+        </div>
 
-			
-		</div>
-
-		<div class="course-items">
-			@if (courses == null)
-			{
-				<div><i class="fa-sharp fa-solid fa-spinner-third fa-spin"></i></div>
-			}
-			else
-			{
-				@foreach (var course in courses)
-				{
-					var link = $"courses/details/{course.Id}";
-					<h5 class="title">@course.Id</h5>
-					<h5 class="title">@course.Title</h5>
-					<a class="course" href="@link" asp-route-id="course.Id">
-		
-					</a>
-				}
-			}
-		</div>
-	</div>
+        <div class="course-items">
+            @if (courses == null)
+            {
+                <div><i class="fa-sharp fa-solid fa-spinner-third fa-spin"></i></div>
+            }
+            else
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Course Title</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var course in courses)
+                        {
+                            <tr>
+                                <td>@course.Title</td>
+                                <td>
+                                    <button class="btn btn-theme"
+                                            @onclick="() => EditCourse(course.Id)">
+                                        Edit
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
 </section>
 
 @code {
-	private List<CourseCardModel>? courses;
+    private void EditCourse(string? courseId)
+    {
+        if (courseId != null)
+        {
+            NavigationManager.NavigateTo($"/courses/edit/{courseId}");
+        }
+    }
 
-	protected override async Task OnInitializedAsync()
-	{
-		var query = new GraphQLQuery { Query = "{getCourses { id isBestseller title authors { name } prices { price currency discount } hours likesInProcent likes imageUri }}" };
-		var response = await Http.PostAsJsonAsync("https://courseprovider-js.azurewebsites.net/api/graphql?code=EgqwsylmzpLETaxlEGIn2eejQhTsqWNK6pPLpkIML-UfAzFu4AXpBQ%3D%3D", query);
+    private List<CourseCardModel>? courses;
 
-		if (response.IsSuccessStatusCode)
-		{
-			var jsonResponse = await response.Content.ReadAsStringAsync();
-			Console.WriteLine(jsonResponse);
+    protected override async Task OnInitializedAsync()
+    {
+        var query = new GraphQLQuery { Query = "{ getCourses { id isBestseller title authors { name } prices { price currency discount } hours likesInProcent likes imageUri } }" };
+        var response = await Http.PostAsJsonAsync("https://courseprovider-js.azurewebsites.net/api/graphql?code=EgqwsylmzpLETaxlEGIn2eejQhTsqWNK6pPLpkIML-UfAzFu4AXpBQ%3D%3D", query);
 
-			try
-			{
-				var result = JsonSerializer.Deserialize<DynamicGraphQLResponse>(jsonResponse);
-				if (result != null && result.Data.TryGetProperty("getCourses", out var coursesJson))
-				{
-					courses = coursesJson.EnumerateArray()
-						.Select(course => new CourseCardModel
-							{
-								Id = course.TryGetProperty("id", out var id) ? id.GetString() : string.Empty,
-								IsBestseller = course.TryGetProperty("isBestseller", out var isBestseller) ? isBestseller.GetBoolean() : false,
-								ImageUri = course.TryGetProperty("imageUri", out var imageUri) ? imageUri.GetString() : string.Empty,
-								Title = course.TryGetProperty("title", out var title) ? title.GetString() : string.Empty,
-								Author = course.TryGetProperty("authors", out var authors) && authors[0].TryGetProperty("name", out var author) ? author.GetString() : string.Empty,
-								Price = course.TryGetProperty("prices", out var pricesJson) ? $"{pricesJson.GetProperty("currency").GetString()} {pricesJson.GetProperty("price").GetDouble()}" : string.Empty,
-								DiscountPrice = course.TryGetProperty("prices", out var discountJson) && discountJson.GetProperty("discount").GetDouble() > 0
-										? $"{discountJson.GetProperty("currency").GetString()} {discountJson.GetProperty("price").GetDouble() - discountJson.GetProperty("discount").GetDouble()}"
-										: null,
-								Hours = course.TryGetProperty("hours", out var hours) ? hours.GetString() : string.Empty,
-								LikesInProcent = course.TryGetProperty("likesInProcent", out var likesInProcent) ? likesInProcent.GetString() : string.Empty,
-								LikesInNumbers = course.TryGetProperty("likes", out var likes) ? likes.GetString() : string.Empty
-							})
-					.ToList();
-				}
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine($"Error JSON response: {ex.Message}");
-			}
-		}
-	}
+        if (response.IsSuccessStatusCode)
+        {
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+
+            try
+            {
+                var result = JsonSerializer.Deserialize<DynamicGraphQLResponse>(jsonResponse);
+                if (result != null && result.Data.TryGetProperty("getCourses", out var coursesJson))
+                {
+                    courses = coursesJson.EnumerateArray()
+                        .Select(course => new CourseCardModel
+                            {
+                                Id = course.TryGetProperty("id", out var id) ? id.GetString() : string.Empty,
+                                IsBestseller = course.TryGetProperty("isBestseller", out var isBestseller) ? isBestseller.GetBoolean() : false,
+                                ImageUri = course.TryGetProperty("imageUri", out var imageUri) ? imageUri.GetString() : string.Empty,
+                                Title = course.TryGetProperty("title", out var title) ? title.GetString() : string.Empty,
+                                Author = course.TryGetProperty("authors", out var authors) && authors[0].TryGetProperty("name", out var author) ? author.GetString() : string.Empty,
+                                Price = course.TryGetProperty("prices", out var pricesJson) ? $"{pricesJson.GetProperty("currency").GetString()} {pricesJson.GetProperty("price").GetDouble()}" : string.Empty,
+                                DiscountPrice = course.TryGetProperty("prices", out var discountJson) && discountJson.GetProperty("discount").GetDouble() > 0
+                                                ? $"{discountJson.GetProperty("currency").GetString()} {discountJson.GetProperty("price").GetDouble() - discountJson.GetProperty("discount").GetDouble()}"
+                                                : null,
+                                Hours = course.TryGetProperty("hours", out var hours) ? hours.GetString() : string.Empty,
+                                LikesInProcent = course.TryGetProperty("likesInProcent", out var likesInProcent) ? likesInProcent.GetString() : string.Empty,
+                                LikesInNumbers = course.TryGetProperty("likes", out var likes) ? likes.GetString() : string.Empty
+                            })
+                        .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error JSON response: {ex.Message}");
+            }
+        }
+    }
 }

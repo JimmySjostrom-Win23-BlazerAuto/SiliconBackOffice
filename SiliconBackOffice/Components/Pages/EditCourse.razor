@@ -1,0 +1,92 @@
+﻿@page "/courses/edit/{courseId:guid}"
+@using System.Text.Json
+@using Microsoft.AspNetCore.Authorization
+@using SiliconBackOffice.Models
+
+@attribute [Authorize]
+@attribute [StreamRendering]
+
+@inject HttpClient Http
+
+<PageTitle>Edit Course</PageTitle>
+
+<section class="course-details">
+    <div class="container">
+        @if (course != null)
+        {
+            <div class="course">
+                @if (course.IsBestseller)
+                {
+                    <div class="bestseller">Best Seller</div>
+                }
+                <img src="@course.ImageUri" alt="@course.Title" />
+                <div class="content">
+                    <h5 class="title">@course.Title</h5>
+                    <p class="author">By @course.Author</p>
+                    <div class="pricing">
+                        @if (!string.IsNullOrEmpty(course.DiscountPrice))
+                        {
+                            <div class="discount">@course.DiscountPrice</div>
+                        }
+                        <div class="price @(!string.IsNullOrEmpty(course.DiscountPrice)? "discount-enabled" : "")">@course.Price</div>
+                    </div>
+                    <div class="footer">
+                        <div class="hours">
+                            <i class="fa-regular fa-thumbs-up"></i> @course.LikesInProcent (@course.LikesInNumbers)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p>Loading course details...</p>
+        }
+    </div>
+</section>
+
+@code {
+    private CourseCardModel course;
+
+    [Parameter]
+    public Guid CourseId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var query = new GraphQLQuery { Query = $"{{ getCourseById(id: \"{CourseId}\") {{ id isBestseller title authors {{ name }} prices {{ price currency discount }} hours likesInProcent likes imageUri }} }}" };
+        var response = await Http.PostAsJsonAsync("https://courseprovider-js.azurewebsites.net/api/graphql?code=EgqwsylmzpLETaxlEGIn2eejQhTsqWNK6pPLpkIML-UfAzFu4AXpBQ%3D%3D", query);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(jsonResponse);
+
+            try
+            {
+                var result = JsonSerializer.Deserialize<DynamicGraphQLResponse>(jsonResponse);
+                if (result != null && result.Data.TryGetProperty("getCourseById", out var courseJson))
+                {
+                    course = new CourseCardModel
+                        {
+                            Id = courseJson.TryGetProperty("id", out var id) ? id.GetString() : string.Empty,
+                            IsBestseller = courseJson.TryGetProperty("isBestseller", out var isBestseller) ? isBestseller.GetBoolean() : false,
+                            ImageUri = courseJson.TryGetProperty("imageUri", out var imageUri) ? imageUri.GetString() : string.Empty,
+                            Title = courseJson.TryGetProperty("title", out var title) ? title.GetString() : string.Empty,
+                            Author = courseJson.TryGetProperty("authors", out var authors) && authors[0].TryGetProperty("name", out var author) ? author.GetString() : string.Empty,
+                            Price = courseJson.TryGetProperty("prices", out var pricesJson) ? $"{pricesJson.GetProperty("currency").GetString()} {pricesJson.GetProperty("price").GetDouble()}" : string.Empty,
+                            DiscountPrice = courseJson.TryGetProperty("prices", out var discountJson) && discountJson.GetProperty("discount").GetDouble() > 0
+                                ? $"{discountJson.GetProperty("currency").GetString()} {discountJson.GetProperty("price").GetDouble() - discountJson.GetProperty("discount").GetDouble()}"
+                                : null,
+                            Hours = courseJson.TryGetProperty("hours", out var hours) ? hours.GetString() : string.Empty,
+                            LikesInProcent = courseJson.TryGetProperty("likesInProcent", out var likesInProcent) ? likesInProcent.GetString() : string.Empty,
+                            LikesInNumbers = courseJson.TryGetProperty("likes", out var likes) ? likes.GetString() : string.Empty
+                        };
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error JSON response: {ex.Message}");
+            }
+        }
+    }
+}

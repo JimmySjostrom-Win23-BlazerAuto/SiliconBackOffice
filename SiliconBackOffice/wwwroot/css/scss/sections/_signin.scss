@@ -1,0 +1,113 @@
+#signin {
+    margin-top: 30px;
+
+    .container {
+        width: 95%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+
+        @media (min-width: 992px) {
+            width: 60%;
+        }
+
+        @media (min-width: 1200px) {
+            width: 40%;
+        }
+
+        form {
+            padding: 1rem;
+            width: 100%;
+
+            .content {
+                display: grid;
+                gap: 1rem 2rem;
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "email" "password" "remember" "button" "forgot";
+
+                #form-email,
+                #form-password,
+                #form-remember,
+                #form-button,
+                #form-forgot-password {
+                    width: 100%;
+                }
+
+                .input-group {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    width: 100%;
+
+                    .form-control {
+                        width: 100%;
+                        padding: 0.5rem;
+                        font-size: 1rem;
+                        border: 1px solid #ced4da;
+                        border-radius: 0.25rem;
+                        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+                    }
+
+                    .form-control:focus {
+                        border-color: #80bdff;
+                        outline: 0;
+                        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+                    }
+
+                    .form-label {
+                        margin-top: 0.5rem;
+                        font-size: 1rem;
+                    }
+                }
+
+                .checkbox-group {
+                    display: flex;
+                    align-items: center;
+
+                    .form-check-input {
+                        margin-right: 0.5rem;
+                        width: auto;
+                        height: auto;
+                    }
+
+                    label {
+                        font-size: 1rem;
+                    }
+                }
+
+                .btn-theme-s {
+                    padding: 0.5rem 1rem;
+                    font-size: 1rem;
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+    .external-providers {
+        text-align: center;
+        margin-top: 20px;
+
+        h6 {
+            margin-bottom: 10px;
+        }
+
+        .providers {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            .btn-theme-s {
+                margin-top: 10px;
+            }
+
+            .btn-group {
+                display: flex;
+                justify-content: center;
+                gap: 10px;
+            }
+        }
+    }
+}

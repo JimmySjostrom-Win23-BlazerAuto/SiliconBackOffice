@@ -1,0 +1,125 @@
+form {
+    width: 100%;
+    display: grid;
+    font-size: 16px;
+    font-weight: 400 !important;
+
+    .input-group {
+        display: grid;
+    }
+
+    .validation-message {
+        font-size: 14px;
+        font-weight: 400 !important;
+        color: var(--color-danger-dark);
+        padding: 2px 5px;
+    }
+
+    .checkbox {
+        span {
+            display: block;
+
+            &.field-validation-error {
+                position: static;
+                top: 0;
+                right: 0;
+                @include text-s;
+                color: var(--color-danger);
+            }
+        }
+    }
+
+    .checkbox-group {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 0.5rem;
+
+        input[type="checkbox"] {
+            height: 1.2rem;
+            width: 1.2rem;
+            border: 00.63rem solid red;
+        }
+
+        label {
+            margin: 0;
+            font-weight: 400;
+        }
+
+        span {
+            display: block;
+
+            &.field-validation-error {
+                position: static;
+                top: 0;
+                right: 0;
+                @include text-s;
+                color: var(--color-danger);
+            }
+        }
+    }
+
+    label {
+        margin-bottom: 0.188rem;
+        font-weight: 700;
+    }
+
+    input {
+        padding: 1rem;
+        border-radius: 0.5rem !important;
+        border: 0.063rem solid var(--color-gray-400);
+
+        &::placeholder {
+            opacity: 0.4;
+        }
+
+        &.input-validation-error {
+            border: 0.063rem solid var(--color-danger) !important;
+            color: var(--color-danger);
+
+            &::placeholder {
+                color: var(--color-danger);
+            }
+        }
+    }
+
+    textarea {
+        padding: 1rem;
+        border-radius: 0.5rem !important;
+        border: 0.063rem solid var(--color-gray-800);
+        resize: none;
+
+        &::placeholder {
+            opacity: 0.4;
+        }
+
+        &.input-validation-error {
+            border: 0.063rem solid var(--color-danger) !important;
+            color: var(--color-danger);
+
+            &::placeholder {
+                color: var(--color-danger);
+            }
+        }
+    }
+
+    span {
+        &.field-validation-error {
+            position: absolute;
+            top: 0;
+            right: 0;
+            @include text-s;
+            color: var(--color-danger);
+
+            &::after {
+                position: absolute;
+                right: -30px;
+                top: 47px;
+                z-index: 10;
+                font-size: 2em;
+                display: block;
+                content: '\2BBF';
+            }
+        }
+    }
+}
