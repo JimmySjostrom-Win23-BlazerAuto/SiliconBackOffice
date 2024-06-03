@@ -30,6 +30,7 @@
                             <thead>
                                 <tr>
                                     <th>Course Title</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -41,6 +42,10 @@
                                             <button class="btn btn-theme"
                                                     @onclick="() => EditCourse(course.Id)">
                                                 Edit
+                                            </button>
+                                            <button class="btn btn-danger"
+                                                    @onclick="() => DeleteCourse(course.Id)">
+                                                Delete
                                             </button>
                                         </td>
                                     </tr>
@@ -67,6 +72,11 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadCourses();
+    }
+
+    private async Task LoadCourses()
+    {
         var query = new GraphQLQuery { Query = "{ getCourses { id isBestseller title authors { name } prices { price currency discount } hours likesInProcent likes imageUri } }" };
         var response = await Http.PostAsJsonAsync("https://courseprovider-js.azurewebsites.net/api/graphql?code=EgqwsylmzpLETaxlEGIn2eejQhTsqWNK6pPLpkIML-UfAzFu4AXpBQ%3D%3D", query);
 
@@ -89,8 +99,8 @@
                                 Author = course.TryGetProperty("authors", out var authors) && authors[0].TryGetProperty("name", out var author) ? author.GetString() : string.Empty,
                                 Price = course.TryGetProperty("prices", out var pricesJson) ? $"{pricesJson.GetProperty("currency").GetString()} {pricesJson.GetProperty("price").GetDouble()}" : string.Empty,
                                 DiscountPrice = course.TryGetProperty("prices", out var discountJson) && discountJson.GetProperty("discount").GetDouble() > 0
-                                                ? $"{discountJson.GetProperty("currency").GetString()} {discountJson.GetProperty("price").GetDouble() - discountJson.GetProperty("discount").GetDouble()}"
-                                                : null,
+                                                    ? $"{discountJson.GetProperty("currency").GetString()} {discountJson.GetProperty("price").GetDouble() - discountJson.GetProperty("discount").GetDouble()}"
+                                                    : null,
                                 Hours = course.TryGetProperty("hours", out var hours) ? hours.GetString() : string.Empty,
                                 LikesInProcent = course.TryGetProperty("likesInProcent", out var likesInProcent) ? likesInProcent.GetString() : string.Empty,
                                 LikesInNumbers = course.TryGetProperty("likes", out var likes) ? likes.GetString() : string.Empty
@@ -104,4 +114,39 @@
             }
         }
     }
+
+    private async Task DeleteCourse(string? courseId)
+    {
+        if (courseId != null)
+        {
+            // Log the course ID being deleted
+            Console.WriteLine($"DELETE COURSE :: {courseId}");
+
+            // Construct the GraphQL query with the deleteCourse mutation and the course ID parameter
+            var query = new GraphQLQuery { Query = $"mutation {{ deleteCourse(id: \"{courseId}\") }}" };
+
+            // Send the GraphQL query to the server
+            var response = await Http.PostAsJsonAsync("https://courseprovider-js.azurewebsites.net/api/graphql?code=EgqwsylmzpLETaxlEGIn2eejQhTsqWNK6pPLpkIML-UfAzFu4AXpBQ%3D%3D", query);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Refresh the course list
+                await LoadCourses();
+            }
+            else
+            {
+                // Handle unsuccessful deletion
+                Console.WriteLine("Error deleting course.");
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
 }
