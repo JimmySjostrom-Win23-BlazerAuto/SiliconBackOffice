@@ -13,8 +13,7 @@
 @inject ApplicationDbContext DbContext
 @inject ILogger<EditUser> Logger
 
-<AuthorizeView>
-    <Authorized>
+
         <PageTitle>Edit User Profile</PageTitle>
         <div class="details">
             <div class="basic-info">
@@ -92,8 +91,7 @@
                 </section>
             </div>
         </div>
-    </Authorized>
-</AuthorizeView>
+
 
 @code {
     [Parameter]
